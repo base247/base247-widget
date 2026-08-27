@@ -1,8 +1,7 @@
 (function () {
   // ===== 設定區(之後可依客戶改顏色) =====
   const CONFIG = {
-    webhookSend: "https://hook.eu1.make.com/swl4n3nkrvebavbtjr5v4ns8wrwfengm",
-    webhookPoll: "https://hook.eu1.make.com/swl4n3nkrvebavbtjr5v4ns8wrwfengm",
+    webhookentry: "https://hook.eu1.make.com/swl4n3nkrvebavbtjr5v4ns8wrwfengm",
     pollIntervalMs: 4000,
     primaryColor: "#2563eb", // 客戶可自訂的顏色,先給預設藍色
     welcomeText: "您好!有什麼我可以幫忙的嗎?",
