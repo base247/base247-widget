@@ -1,16 +1,16 @@
 (function () {
-  // ===== 設定區(之後可依客戶改顏色) =====
+  // ===== 設定區 =====
   const CONFIG = {
-    webhookentry: "https://hook.eu1.make.com/swl4n3nkrvebavbtjr5v4ns8wrwfengm",
+    webhookUrl: "https://hook.eu1.make.com/swl4n3nkrvebavbtjr5v4ns8wrwfengm",
     pollIntervalMs: 4000,
-    primaryColor: "#2563eb", // 客戶可自訂的顏色,先給預設藍色
     welcomeText: "您好!有什麼我可以幫忙的嗎?",
     privacyNotice: "此對話可能會被記錄以提供更好的服務"
   };
 
-  // 從 <script> 標籤的 data-widget-key 屬性讀取這個客戶的 Widget Key
+  // 從 <script> 標籤讀取這個客戶專屬的 Widget Key 和顏色(每個客戶的嵌入碼不一樣,但程式碼是同一份)
   const currentScript = document.currentScript;
   const widgetKey = currentScript.getAttribute("data-widget-key");
+  const primaryColor = currentScript.getAttribute("data-color") || "#2563eb"; // 沒填 data-color 就用預設藍色
   if (!widgetKey) {
     console.error("Base247 Widget: 找不到 data-widget-key,請檢查嵌入碼設定");
     return;
@@ -33,7 +33,7 @@
   Object.assign(bubble.style, {
     position: "fixed", bottom: "20px", right: "20px",
     width: "56px", height: "56px", borderRadius: "50%",
-    background: CONFIG.primaryColor, color: "#fff",
+    background: primaryColor, color: "#fff",
     display: "flex", alignItems: "center", justifyContent: "center",
     fontSize: "24px", cursor: "pointer", boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
     zIndex: 999999
@@ -49,21 +49,30 @@
     zIndex: 999999, fontFamily: "sans-serif"
   });
   panel.innerHTML = `
-    <div style="background:${CONFIG.primaryColor};color:#fff;padding:12px;font-size:14px;">
+    <div style="background:${primaryColor};color:#fff;padding:12px;font-size:14px;">
       ${CONFIG.welcomeText}
       <div style="font-size:11px;opacity:0.85;margin-top:4px;">${CONFIG.privacyNotice}</div>
     </div>
     <div id="b247-messages" style="flex:1;overflow-y:auto;padding:10px;font-size:14px;"></div>
     <div style="display:flex;border-top:1px solid #eee;">
       <input id="b247-input" type="text" placeholder="輸入訊息..." style="flex:1;border:none;padding:10px;font-size:14px;outline:none;">
-      <button id="b247-send" style="border:none;background:${CONFIG.primaryColor};color:#fff;padding:0 16px;cursor:pointer;">送出</button>
+      <button id="b247-send" style="border:none;background:${primaryColor};color:#fff;padding:0 16px;cursor:pointer;">送出</button>
     </div>
   `;
   document.body.appendChild(panel);
 
-  bubble.addEventListener("click", () => {
+  bubble.addEventListener("click", (e) => {
+    e.stopPropagation(); // 避免這次點擊被「點外面關閉」的邏輯誤判成點在外面
     panel.style.display = panel.style.display === "none" ? "flex" : "none";
   });
+
+  // 點聊天視窗以外的地方,自動關閉視窗
+  document.addEventListener("click", (e) => {
+    if (panel.style.display === "flex" && !panel.contains(e.target) && !bubble.contains(e.target)) {
+      panel.style.display = "none";
+    }
+  });
+  panel.addEventListener("click", (e) => e.stopPropagation()); // 點視窗「裡面」不要被判定成點外面
 
   // ===== 送出訊息 =====
   const inputEl = panel.querySelector("#b247-input");
@@ -76,7 +85,7 @@
     Object.assign(msg.style, {
       margin: "6px 0", padding: "8px 10px", borderRadius: "8px",
       maxWidth: "80%", fontSize: "13px",
-      background: fromUser ? CONFIG.primaryColor : "#f1f1f1",
+      background: fromUser ? primaryColor : "#f1f1f1",
       color: fromUser ? "#fff" : "#333",
       marginLeft: fromUser ? "auto" : "0"
     });
@@ -88,28 +97,39 @@
     const text = inputEl.value.trim();
     if (!text) return;
     appendMessage(text, true);
-    inputEl.value = "";
+    inputEl.value = ""; // 送出後立刻清空輸入框
     try {
-      await fetch(CONFIG.webhookSend, {
+      await fetch(CONFIG.webhookUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ widget_key: widgetKey, visitor_id: visitorId, text: text })
+        body: JSON.stringify({ action: "send", widget_key: widgetKey, visitor_id: visitorId, text: text })
       });
     } catch (e) {
       console.error("Base247 Widget: 送出訊息失敗", e);
     }
   }
   sendBtn.addEventListener("click", sendMessage);
-  inputEl.addEventListener("keydown", (e) => { if (e.key === "Enter") sendMessage(); });
+
+  // 用中文/日文等輸入法打字時,按 Enter 常常是「確認選字」而不是「送出」,
+  // 這裡用 isComposing 判斷,選字過程中的 Enter 不會誤觸發送出
+  let isComposing = false;
+  inputEl.addEventListener("compositionstart", () => { isComposing = true; });
+  inputEl.addEventListener("compositionend", () => { isComposing = false; });
+  inputEl.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !isComposing) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
 
   // ===== 輪詢抓新訊息 =====
   let knownMessageCount = 0;
   async function pollMessages() {
     try {
-      const res = await fetch(CONFIG.webhookPoll, {
+      const res = await fetch(CONFIG.webhookUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ widget_key: widgetKey, visitor_id: visitorId })
+        body: JSON.stringify({ action: "poll", widget_key: widgetKey, visitor_id: visitorId })
       });
       const data = await res.json();
       let messages = data.messages || [];
