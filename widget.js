@@ -127,7 +127,15 @@
 
   // ===== 輪詢抓新訊息 =====
   let knownMessageCount = 0;
+  let lastActivity = Date.now();
+  inputEl.addEventListener("input", () => { lastActivity = Date.now(); });
+  sendBtn.addEventListener("click", () => { lastActivity = Date.now(); });
+
   async function pollMessages() {
+    if (Date.now() - lastActivity > 15 * 60 * 1000) { // 超過15分鐘沒有任何互動,自動停止
+      stopPolling();
+      return;
+    }
     try {
       const res = await fetch(CONFIG.webhookUrl, {
         method: "POST",
@@ -160,4 +168,12 @@
     clearInterval(pollTimer);
     pollTimer = null;
   }
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      stopPolling(); // 分頁不在前景(切走、縮到背景),立刻停止輪詢
+    } else if (panel.style.display === "flex") {
+      startPolling(); // 切回來,而且聊天視窗本來是開著的,才恢復輪詢
+    }
+  });
 })();
