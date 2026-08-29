@@ -62,14 +62,17 @@
   document.body.appendChild(panel);
 
   bubble.addEventListener("click", (e) => {
-    e.stopPropagation(); // 避免這次點擊被「點外面關閉」的邏輯誤判成點在外面
-    panel.style.display = panel.style.display === "none" ? "flex" : "none";
+    e.stopPropagation();
+    const isOpen = panel.style.display === "flex";
+    panel.style.display = isOpen ? "none" : "flex";
+    if (isOpen) { stopPolling(); } else { startPolling(); }
   });
 
   // 點聊天視窗以外的地方,自動關閉視窗
   document.addEventListener("click", (e) => {
     if (panel.style.display === "flex" && !panel.contains(e.target) && !bubble.contains(e.target)) {
       panel.style.display = "none";
+      stopPolling();
     }
   });
   panel.addEventListener("click", (e) => e.stopPropagation()); // 點視窗「裡面」不要被判定成點外面
@@ -148,5 +151,13 @@
       console.error("Base247 Widget: 輪詢訊息失敗", e);
     }
   }
-  setInterval(pollMessages, CONFIG.pollIntervalMs);
+  let pollTimer = null;
+  function startPolling() {
+    if (pollTimer) return; // 已經在跑就不要重複開
+    pollTimer = setInterval(pollMessages, CONFIG.pollIntervalMs);
+  }
+  function stopPolling() {
+    clearInterval(pollTimer);
+    pollTimer = null;
+  }
 })();
