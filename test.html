@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Base247 Web Widget 測試</title>
+  <style>
+    :root { color-scheme: light; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; color: #182230; background: linear-gradient(145deg, #fff7f8 0%, #f8fafc 48%, #eef4ff 100%); }
+    main { width: min(880px, calc(100% - 40px)); margin: 0 auto; padding: 72px 0 120px; }
+    .eyebrow { margin: 0 0 12px; color: #e11d48; font-size: 13px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    h1 { max-width: 680px; margin: 0; font-size: clamp(34px, 7vw, 66px); line-height: 1.04; letter-spacing: -.04em; }
+    .lead { max-width: 620px; margin: 22px 0 36px; color: #475467; font-size: 18px; line-height: 1.7; }
+    .card { max-width: 660px; padding: 24px; border: 1px solid rgba(16,24,40,.08); border-radius: 22px; background: rgba(255,255,255,.78); box-shadow: 0 18px 50px rgba(16,24,40,.08); backdrop-filter: blur(14px); }
+    h2 { margin: 0 0 14px; font-size: 18px; }
+    ol { margin: 0; padding-left: 22px; color: #344054; line-height: 1.8; }
+    code { padding: 2px 6px; border-radius: 6px; background: #f2f4f7; font-size: .9em; }
+    .note { margin: 18px 0 0; color: #667085; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">Base247 · Web Chat Widget</p>
+    <h1>任何網站，都能擁有自己的 AI 客服。</h1>
+    <p class="lead">這是正式 HTTPS 測試頁。右下角的聊天泡泡會透過 Web Gateway 連接唯一 Shared Core，並依 Widget Key 自動隔離客戶資料。</p>
+    <section class="card">
+      <h2>建議測試順序</h2>
+      <ol>
+        <li>先詢問一般問題，確認 AI 回覆正常。</li>
+        <li>重新開一個分頁，輸入「我想找真人客服」。</li>
+        <li>確認顯示聯絡資料表單，送出測試 Email。</li>
+        <li>重新整理同一分頁，確認對話仍會延續。</li>
+        <li>關閉分頁後重新開啟，確認不會看到上一位訪客的對話。</li>
+      </ol>
+      <p class="note">請勿下載後直接雙擊本頁；<code>file://</code> 沒有可驗證的網站 Origin，必須從 GitHub Pages 開啟。</p>
+    </section>
+  </main>
+
+  <script
+    src="./widget.js"
+    data-widget-key="wgt_72b9aaa1ba437d75c9bd5ca1fdbe3ff8"
+    data-locale="zh-TW"
+    async></script>
+</body>
+</html>
