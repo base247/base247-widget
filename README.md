@@ -8,7 +8,7 @@
 
 ```html
 <script
-  src="https://base247.github.io/base247-widget/widget.js"
+  src="https://base247.github.io/base247-widget/widget.js?v=1.0.0"
   data-widget-key="客戶專屬的_Widget_Key"
   async></script>
 ```
@@ -26,7 +26,7 @@
 
 ```html
 <script
-  src="https://base247.github.io/base247-widget/widget.js"
+  src="https://base247.github.io/base247-widget/widget.js?v=1.0.0"
   data-widget-key="wgt_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
   data-locale="zh-TW"
   async></script>
