@@ -343,31 +343,45 @@
         }
         .launcher-orb {
           position: absolute; inset: 0; overflow: hidden; border-radius: inherit;
-          background: #030408; pointer-events: none; z-index: 0;
+          background: radial-gradient(circle at 50% 45%, #111525 0%, #05060b 58%, #020306 100%);
+          pointer-events: none; z-index: 0;
         }
         .launcher-orb::before, .launcher-orb::after {
           content: ""; position: absolute; pointer-events: none; border-radius: 50%;
+          will-change: transform, opacity;
         }
         .launcher-orb::before {
-          inset: -38%;
-          background: conic-gradient(from 0deg,
-            rgba(3, 4, 8, .96) 0 9%,
-            rgba(71, 140, 255, .92) 22%,
-            rgba(10, 32, 76, .72) 38%,
-            rgba(195, 59, 245, .9) 55%,
-            rgba(43, 8, 64, .74) 72%,
-            rgba(71, 140, 255, .72) 88%,
-            rgba(3, 4, 8, .96) 100%);
-          filter: blur(7px); opacity: .9;
-          animation: b247-orb-spin 10s linear infinite;
+          left: -24%; top: 18%; width: 88%; height: 78%;
+          background: radial-gradient(ellipse at center,
+            rgba(71, 140, 255, .96) 0%,
+            rgba(71, 140, 255, .52) 34%,
+            rgba(29, 79, 164, .14) 62%,
+            transparent 76%);
+          filter: blur(7px);
+          animation: b247-orb-blue-drift 15.2s ease-in-out infinite;
         }
         .launcher-orb::after {
-          inset: -24%;
-          background:
-            radial-gradient(circle at 28% 68%, rgba(71, 140, 255, .9) 0%, rgba(71, 140, 255, .2) 35%, transparent 62%),
-            radial-gradient(circle at 72% 30%, rgba(195, 59, 245, .88) 0%, rgba(195, 59, 245, .18) 36%, transparent 64%);
-          filter: blur(6px);
-          animation: b247-orb-flow 6.4s ease-in-out infinite;
+          left: 28%; top: -20%; width: 92%; height: 88%;
+          background: radial-gradient(ellipse at center,
+            rgba(195, 59, 245, .94) 0%,
+            rgba(195, 59, 245, .46) 33%,
+            rgba(92, 25, 124, .14) 61%,
+            transparent 76%);
+          filter: blur(7px);
+          animation: b247-orb-purple-drift 18.7s ease-in-out infinite;
+        }
+        .launcher-haze {
+          position: absolute; left: -18%; top: 35%; width: 136%; height: 36%;
+          border-radius: 48% 52% 58% 42% / 58% 44% 56% 42%;
+          background: linear-gradient(100deg,
+            transparent 5%,
+            rgba(178, 202, 255, .08) 22%,
+            rgba(238, 242, 255, .58) 48%,
+            rgba(214, 185, 255, .28) 66%,
+            transparent 92%);
+          filter: blur(5px); mix-blend-mode: screen; opacity: .7;
+          will-change: transform, opacity;
+          animation: b247-orb-haze-drift 12.9s ease-in-out infinite;
         }
         .launcher[aria-expanded="true"] .launcher-orb { filter: brightness(.72); }
         .launcher:hover { transform: translateY(-2px); box-shadow: 0 16px 36px rgba(16, 24, 40, .28); }
@@ -388,11 +402,28 @@
         }
         .panel.open { display: grid; animation: b247-in .18s ease-out; }
         @keyframes b247-in { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: none; } }
-        @keyframes b247-orb-spin { to { transform: rotate(360deg); } }
-        @keyframes b247-orb-flow {
-          0%, 100% { opacity: .48; transform: translate(-9%, 8%) scale(.94); }
-          34% { opacity: .9; transform: translate(10%, -11%) scale(1.08); }
-          68% { opacity: .62; transform: translate(7%, 10%) scale(1); }
+        @keyframes b247-orb-blue-drift {
+          0%, 100% { opacity: .55; transform: translate(-12%, 26%) scale(1.12, .84); }
+          14% { opacity: .82; transform: translate(24%, -8%) scale(.9, 1.1); }
+          31% { opacity: .64; transform: translate(58%, 18%) scale(1.08, .92); }
+          49% { opacity: .92; transform: translate(34%, -31%) scale(.86, 1.16); }
+          67% { opacity: .58; transform: translate(70%, 34%) scale(1.14, .82); }
+          83% { opacity: .78; transform: translate(7%, -20%) scale(.96, 1.06); }
+        }
+        @keyframes b247-orb-purple-drift {
+          0%, 100% { opacity: .68; transform: translate(24%, -14%) scale(.92, 1.08); }
+          19% { opacity: .9; transform: translate(-36%, 28%) scale(1.14, .84); }
+          38% { opacity: .56; transform: translate(-8%, 56%) scale(.86, 1.12); }
+          57% { opacity: .84; transform: translate(-52%, 4%) scale(1.08, .9); }
+          73% { opacity: .62; transform: translate(8%, 38%) scale(.9, 1.14); }
+          89% { opacity: .88; transform: translate(-30%, -22%) scale(1.12, .88); }
+        }
+        @keyframes b247-orb-haze-drift {
+          0%, 100% { opacity: .48; transform: translate(-15%, 15%) scale(1, .72) skewX(-8deg); }
+          23% { opacity: .82; transform: translate(11%, -18%) scale(.84, 1.08) skewX(10deg); }
+          46% { opacity: .56; transform: translate(-3%, 24%) scale(1.12, .68) skewX(-4deg); }
+          69% { opacity: .88; transform: translate(17%, -7%) scale(.92, 1.04) skewX(7deg); }
+          87% { opacity: .6; transform: translate(-10%, -22%) scale(1.06, .76) skewX(-11deg); }
         }
         .header { display: flex; align-items: flex-start; gap: 12px; padding: 16px; color: var(--b247-on-primary); background: var(--b247-primary); }
         .identity { min-width: 0; flex: 1; }
@@ -452,7 +483,7 @@
         }
         @media (prefers-reduced-motion: reduce) {
           .launcher, .panel { transition: none; animation: none; }
-          .launcher-orb::before, .launcher-orb::after { animation: none; opacity: .65; transform: none; }
+          .launcher-orb::before, .launcher-orb::after, .launcher-haze { animation: none; opacity: .65; transform: none; }
         }
       </style>
       <div class="wrap">
@@ -489,7 +520,7 @@
           </footer>
         </section>
         <button class="launcher" type="button">
-          <span class="launcher-orb" aria-hidden="true"></span>
+          <span class="launcher-orb" aria-hidden="true"><span class="launcher-haze"></span></span>
           <span class="badge" aria-hidden="true"></span>
         </button>
       </div>
