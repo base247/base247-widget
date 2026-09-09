@@ -338,8 +338,34 @@
           position: relative; display: grid; place-items: center; width: 60px; height: 60px;
           padding: 0; border: 0; border-radius: 999px; color: var(--b247-on-primary);
           background: var(--b247-primary); cursor: pointer;
-          box-shadow: 0 12px 32px rgba(16, 24, 40, .24); transition: transform .18s ease, box-shadow .18s ease;
+          box-shadow: 0 12px 32px rgba(16, 24, 40, .24); isolation: isolate;
+          transition: transform .18s ease, box-shadow .18s ease;
         }
+        .launcher::before, .launcher::after {
+          content: ""; position: absolute; pointer-events: none; border-radius: inherit; z-index: -1;
+        }
+        .launcher::before {
+          inset: -10px;
+          background: conic-gradient(from 0deg,
+            transparent 0 10%,
+            rgba(71, 140, 255, .95) 25%,
+            rgba(195, 59, 245, .92) 46%,
+            transparent 64%,
+            rgba(71, 140, 255, .76) 82%,
+            transparent 100%);
+          filter: blur(9px); opacity: .58;
+          animation: b247-aura-spin 9s linear infinite;
+        }
+        .launcher::after {
+          inset: -16px;
+          background:
+            radial-gradient(circle at 28% 68%, rgba(71, 140, 255, .52) 0%, transparent 48%),
+            radial-gradient(circle at 72% 30%, rgba(195, 59, 245, .48) 0%, transparent 50%);
+          filter: blur(8px); opacity: .32;
+          animation: b247-aura-breathe 4.8s ease-in-out infinite;
+        }
+        .launcher[aria-expanded="true"]::before,
+        .launcher[aria-expanded="true"]::after { opacity: .2; animation-play-state: paused; }
         .launcher:hover { transform: translateY(-2px); box-shadow: 0 16px 36px rgba(16, 24, 40, .28); }
         .launcher:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
           outline: 3px solid color-mix(in srgb, var(--b247-primary) 35%, white); outline-offset: 2px;
@@ -359,6 +385,11 @@
         }
         .panel.open { display: grid; animation: b247-in .18s ease-out; }
         @keyframes b247-in { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: none; } }
+        @keyframes b247-aura-spin { to { transform: rotate(360deg); } }
+        @keyframes b247-aura-breathe {
+          0%, 100% { opacity: .2; transform: scale(.94); }
+          50% { opacity: .5; transform: scale(1.08); }
+        }
         .header { display: flex; align-items: flex-start; gap: 12px; padding: 16px; color: var(--b247-on-primary); background: var(--b247-primary); }
         .identity { min-width: 0; flex: 1; }
         .business { margin: 0; font-size: 16px; line-height: 1.35; font-weight: 750; overflow-wrap: anywhere; }
@@ -415,7 +446,10 @@
           .launcher { position: absolute; right: 0; bottom: 0; }
           .panel { position: fixed; left: 10px; right: 10px; bottom: max(82px, calc(env(safe-area-inset-bottom) + 76px)); width: auto; height: min(72dvh, 620px); }
         }
-        @media (prefers-reduced-motion: reduce) { .launcher, .panel { transition: none; animation: none; } }
+        @media (prefers-reduced-motion: reduce) {
+          .launcher, .panel { transition: none; animation: none; }
+          .launcher::before, .launcher::after { animation: none; opacity: .25; transform: none; }
+        }
       </style>
       <div class="wrap">
         <section class="panel" role="dialog" aria-modal="false" aria-labelledby="b247-business">
