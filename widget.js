@@ -374,7 +374,6 @@
         .launcher:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
           outline: 3px solid color-mix(in srgb, var(--b247-primary) 35%, white); outline-offset: 2px;
         }
-        .launcher svg { position: relative; width: 28px; height: 28px; fill: currentColor; z-index: 2; }
         .badge {
           position: absolute; top: -3px; right: -3px; min-width: 21px; height: 21px; padding: 0 5px;
           display: none; place-items: center; border: 2px solid white; border-radius: 999px;
@@ -491,7 +490,6 @@
         </section>
         <button class="launcher" type="button">
           <span class="launcher-orb" aria-hidden="true"></span>
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3C6.9 3 3 6.6 3 11c0 2.2 1 4.2 2.7 5.6L5 21l4.1-2.1c.9.2 1.9.4 2.9.4 5.1 0 9-3.6 9-8.2S17.1 3 12 3zm-4 9.2a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4zm4 0a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4zm4 0a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4z"/></svg>
           <span class="badge" aria-hidden="true"></span>
         </button>
       </div>
