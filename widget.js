@@ -336,45 +336,49 @@
         .wrap { position: fixed; z-index: 2147483000; bottom: max(20px, env(safe-area-inset-bottom)); ${position}: max(20px, env(safe-area-inset-${position})); }
         .launcher {
           position: relative; display: grid; place-items: center; width: 60px; height: 60px;
-          padding: 0; border: 0; border-radius: 999px; color: var(--b247-on-primary);
-          background: var(--b247-primary); cursor: pointer;
+          padding: 0; border: 0; border-radius: 999px; color: #ffffff;
+          background: #030408; cursor: pointer;
           box-shadow: 0 12px 32px rgba(16, 24, 40, .24); isolation: isolate;
           transition: transform .18s ease, box-shadow .18s ease;
         }
-        .launcher::before, .launcher::after {
-          content: ""; position: absolute; pointer-events: none; border-radius: inherit; z-index: -1;
+        .launcher-orb {
+          position: absolute; inset: 0; overflow: hidden; border-radius: inherit;
+          background: #030408; pointer-events: none; z-index: 0;
         }
-        .launcher::before {
-          inset: -10px;
+        .launcher-orb::before, .launcher-orb::after {
+          content: ""; position: absolute; pointer-events: none; border-radius: 50%;
+        }
+        .launcher-orb::before {
+          inset: -38%;
           background: conic-gradient(from 0deg,
-            transparent 0 10%,
-            rgba(71, 140, 255, .95) 25%,
-            rgba(195, 59, 245, .92) 46%,
-            transparent 64%,
-            rgba(71, 140, 255, .76) 82%,
-            transparent 100%);
-          filter: blur(9px); opacity: .58;
-          animation: b247-aura-spin 9s linear infinite;
+            rgba(3, 4, 8, .96) 0 9%,
+            rgba(71, 140, 255, .92) 22%,
+            rgba(10, 32, 76, .72) 38%,
+            rgba(195, 59, 245, .9) 55%,
+            rgba(43, 8, 64, .74) 72%,
+            rgba(71, 140, 255, .72) 88%,
+            rgba(3, 4, 8, .96) 100%);
+          filter: blur(7px); opacity: .9;
+          animation: b247-orb-spin 10s linear infinite;
         }
-        .launcher::after {
-          inset: -16px;
+        .launcher-orb::after {
+          inset: -24%;
           background:
-            radial-gradient(circle at 28% 68%, rgba(71, 140, 255, .52) 0%, transparent 48%),
-            radial-gradient(circle at 72% 30%, rgba(195, 59, 245, .48) 0%, transparent 50%);
-          filter: blur(8px); opacity: .32;
-          animation: b247-aura-breathe 4.8s ease-in-out infinite;
+            radial-gradient(circle at 28% 68%, rgba(71, 140, 255, .9) 0%, rgba(71, 140, 255, .2) 35%, transparent 62%),
+            radial-gradient(circle at 72% 30%, rgba(195, 59, 245, .88) 0%, rgba(195, 59, 245, .18) 36%, transparent 64%);
+          filter: blur(6px);
+          animation: b247-orb-flow 6.4s ease-in-out infinite;
         }
-        .launcher[aria-expanded="true"]::before,
-        .launcher[aria-expanded="true"]::after { opacity: .2; animation-play-state: paused; }
+        .launcher[aria-expanded="true"] .launcher-orb { filter: brightness(.72); }
         .launcher:hover { transform: translateY(-2px); box-shadow: 0 16px 36px rgba(16, 24, 40, .28); }
         .launcher:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
           outline: 3px solid color-mix(in srgb, var(--b247-primary) 35%, white); outline-offset: 2px;
         }
-        .launcher svg { width: 28px; height: 28px; fill: currentColor; }
+        .launcher svg { position: relative; width: 28px; height: 28px; fill: currentColor; z-index: 2; }
         .badge {
           position: absolute; top: -3px; right: -3px; min-width: 21px; height: 21px; padding: 0 5px;
           display: none; place-items: center; border: 2px solid white; border-radius: 999px;
-          background: #d92d20; color: white; font: 700 11px/1 Arial, sans-serif;
+          background: #d92d20; color: white; font: 700 11px/1 Arial, sans-serif; z-index: 3;
         }
         .badge.visible { display: grid; }
         .panel {
@@ -385,10 +389,11 @@
         }
         .panel.open { display: grid; animation: b247-in .18s ease-out; }
         @keyframes b247-in { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: none; } }
-        @keyframes b247-aura-spin { to { transform: rotate(360deg); } }
-        @keyframes b247-aura-breathe {
-          0%, 100% { opacity: .2; transform: scale(.94); }
-          50% { opacity: .5; transform: scale(1.08); }
+        @keyframes b247-orb-spin { to { transform: rotate(360deg); } }
+        @keyframes b247-orb-flow {
+          0%, 100% { opacity: .48; transform: translate(-9%, 8%) scale(.94); }
+          34% { opacity: .9; transform: translate(10%, -11%) scale(1.08); }
+          68% { opacity: .62; transform: translate(7%, 10%) scale(1); }
         }
         .header { display: flex; align-items: flex-start; gap: 12px; padding: 16px; color: var(--b247-on-primary); background: var(--b247-primary); }
         .identity { min-width: 0; flex: 1; }
@@ -448,7 +453,7 @@
         }
         @media (prefers-reduced-motion: reduce) {
           .launcher, .panel { transition: none; animation: none; }
-          .launcher::before, .launcher::after { animation: none; opacity: .25; transform: none; }
+          .launcher-orb::before, .launcher-orb::after { animation: none; opacity: .65; transform: none; }
         }
       </style>
       <div class="wrap">
@@ -485,6 +490,7 @@
           </footer>
         </section>
         <button class="launcher" type="button">
+          <span class="launcher-orb" aria-hidden="true"></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3C6.9 3 3 6.6 3 11c0 2.2 1 4.2 2.7 5.6L5 21l4.1-2.1c.9.2 1.9.4 2.9.4 5.1 0 9-3.6 9-8.2S17.1 3 12 3zm-4 9.2a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4zm4 0a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4zm4 0a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4z"/></svg>
           <span class="badge" aria-hidden="true"></span>
         </button>
