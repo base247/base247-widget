@@ -12,7 +12,7 @@
   ).trim();
 
   if (!/^wgt_[a-f0-9]{32}$/i.test(widgetKey)) {
-    console.error("Base247 Widget：data-widget-key 無效或不存在。");
+    console.error("BAIX Widget：data-widget-key 無效或不存在。");
     return;
   }
 
@@ -24,7 +24,7 @@
     }
     apiBase = parsed.href.replace(/\/$/, "");
   } catch (error) {
-    console.error("Base247 Widget：data-api-base 無效。", error);
+    console.error("BAIX Widget：data-api-base 無效。", error);
     return;
   }
 
@@ -60,7 +60,7 @@
       valuePlaceholder: "請輸入 Email、LINE ID 或電話",
       noteLabel: "補充說明（選填）",
       notePlaceholder: "方便聯絡的時間或其他說明",
-      consentLabel: "我同意 Base247 將這些資料提供給客服聯絡使用。",
+      consentLabel: "我同意 BAIX 將這些資料提供給客服聯絡使用。",
       submitLead: "送出聯絡資料",
       savingLead: "正在送出…",
       leadSaved: "資料已送出，客服將另外與您聯絡。",
@@ -92,7 +92,7 @@
       valuePlaceholder: "Enter your email, LINE ID, or phone number",
       noteLabel: "Notes (optional)",
       notePlaceholder: "Best time to contact you or other details",
-      consentLabel: "I agree that Base247 may share these details with support for contact purposes.",
+      consentLabel: "I agree that BAIX may share these details with support for contact purposes.",
       submitLead: "Send contact details",
       savingLead: "Sending…",
       leadSaved: "Your details were sent. Our team will contact you separately.",
@@ -124,7 +124,7 @@
       valuePlaceholder: "Introduce tu email, LINE ID o teléfono",
       noteLabel: "Notas (opcional)",
       notePlaceholder: "Mejor horario u otra información",
-      consentLabel: "Acepto que Base247 comparta estos datos con soporte para contactarme.",
+      consentLabel: "Acepto que BAIX comparta estos datos con soporte para contactarme.",
       submitLead: "Enviar datos",
       savingLead: "Enviando…",
       leadSaved: "Tus datos se enviaron. Nuestro equipo se pondrá en contacto contigo.",
@@ -482,6 +482,9 @@
         }
         .message.pending { opacity: .72; }
         .message.failed { border: 1px solid #7A271A; color: var(--b247-danger); background: #31150F; opacity: 1; }
+        .message a { color: #8AB4FF; text-decoration: underline; text-underline-offset: 2px; }
+        .message a:hover { color: #B8D1FF; }
+        .message a:focus-visible { border-radius: 3px; outline-offset: 2px; }
         .message-meta { display: flex; align-items: center; gap: 7px; margin-top: 4px; color: var(--b247-muted); font-size: 11px; }
         .retry { padding: 2px 7px; border: 1px solid #7A271A; border-radius: 8px; color: var(--b247-danger); background: #31150F; cursor: pointer; font-size: 11px; }
         .lead-card { display: none; margin-top: 14px; padding: 14px; border: 1px solid var(--b247-border); border-radius: 16px; background: var(--b247-surface); box-shadow: 0 8px 24px rgba(0,0,0,.18); }
@@ -597,7 +600,7 @@
     };
     state.elements = elements;
 
-    elements.business.textContent = state.config?.business_name || "Base247";
+    elements.business.textContent = state.config?.business_name || "BAIX";
     elements.online.textContent = state.copy.onlineLabel;
     elements.privacy.textContent = state.copy.privacyNotice || "";
     elements.input.placeholder = state.copy.inputPlaceholder || "";
@@ -744,7 +747,7 @@
     row.className = `message-row ${sender}`;
     const bubble = document.createElement("div");
     bubble.className = `message${status === "sending" ? " pending" : ""}${status === "failed" ? " failed" : ""}`;
-    bubble.textContent = String(text || "");
+    appendTextWithLinks(bubble, text);
     row.appendChild(bubble);
 
     if (status === "sending" || status === "failed") {
@@ -764,6 +767,40 @@
       row.appendChild(meta);
     }
     container.appendChild(row);
+  }
+
+  function appendTextWithLinks(container, value) {
+    const text = String(value || "");
+    const urlPattern = /https?:\/\/[^\s<>"']+/gi;
+    const trailingPunctuation = /[.,!?;:，。！？；：、)\]}>]+$/;
+    let cursor = 0;
+
+    for (const match of text.matchAll(urlPattern)) {
+      const start = match.index ?? 0;
+      const rawUrl = match[0];
+      const suffix = rawUrl.match(trailingPunctuation)?.[0] || "";
+      const url = suffix ? rawUrl.slice(0, -suffix.length) : rawUrl;
+
+      if (start > cursor) container.appendChild(document.createTextNode(text.slice(cursor, start)));
+
+      try {
+        const parsed = new URL(url);
+        if (parsed.protocol !== "http:" && parsed.protocol !== "https:") throw new Error("Unsupported protocol");
+        const link = document.createElement("a");
+        link.href = parsed.href;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = url;
+        container.appendChild(link);
+      } catch {
+        container.appendChild(document.createTextNode(url));
+      }
+
+      if (suffix) container.appendChild(document.createTextNode(suffix));
+      cursor = start + rawUrl.length;
+    }
+
+    if (cursor < text.length) container.appendChild(document.createTextNode(text.slice(cursor)));
   }
 
   async function sendMessage(existingId) {
@@ -971,7 +1008,7 @@
       buildWidget();
     } catch (error) {
       window.__BASE247_WIDGET_LOADED__ = false;
-      console.error("Base247 Widget：初始化失敗。", error);
+      console.error("BAIX Widget：初始化失敗。", error);
     }
   }
 
