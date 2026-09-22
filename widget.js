@@ -46,7 +46,7 @@
       onlineLabel: "線上客服",
       loading: "正在連線…",
       sending: "正在送出…",
-      processing: "正在整理回覆…",
+      processing: "BAIX 正在回覆中…",
       retry: "重新送出",
       failed: "送出失敗",
       reconnect: "工作階段已結束，重新開啟即可開始新對話。",
@@ -78,7 +78,7 @@
       onlineLabel: "Online support",
       loading: "Connecting…",
       sending: "Sending…",
-      processing: "Preparing a reply…",
+      processing: "BAIX is replying…",
       retry: "Try again",
       failed: "Not sent",
       reconnect: "This session has ended. Reopen the chat to start a new conversation.",
@@ -110,7 +110,7 @@
       onlineLabel: "Atención en línea",
       loading: "Conectando…",
       sending: "Enviando…",
-      processing: "Preparando una respuesta…",
+      processing: "BAIX está respondiendo…",
       retry: "Reintentar",
       failed: "No enviado",
       reconnect: "Esta sesión ha finalizado. Vuelve a abrir el chat para iniciar otra conversación.",
@@ -242,6 +242,14 @@
         try {
           data = JSON.parse(text);
         } catch {
+          throw new ApiError("INVALID_JSON_RESPONSE", response.status, "INVALID_JSON_RESPONSE");
+        }
+      }
+      // n8n can return a single response object wrapped in a one-item array.
+      if (Array.isArray(data)) {
+        if (data.length === 1 && data[0] && typeof data[0] === "object") {
+          data = data[0];
+        } else {
           throw new ApiError("INVALID_JSON_RESPONSE", response.status, "INVALID_JSON_RESPONSE");
         }
       }
